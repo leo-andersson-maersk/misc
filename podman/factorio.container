@@ -1,0 +1,21 @@
+# Rootless podman factorio server
+# Under systemd: place in, or hard link to ~/.config/containers/systemd
+#       systemctl --user daemon-reload
+#       systemctl --user start factorio.service
+
+[Container]
+Image=docker.io/factoriotools/factorio:stable
+AutoUpdate=registry
+ContainerName=factorio
+PublishPort=34197:34197/udp
+PublishPort=27015:27015/tcp
+
+# create volume first: podman volume create factorio
+# update server configs after first start: podman unshare && podman volume mount factorio
+Volume=factorio:/factorio
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target
