@@ -1,0 +1,11 @@
+[Container]
+Image=docker.io/itzg/minecraft-server
+PublishPort=25565:25565
+Environment=EULA=TRUE
+Volume=minecraft:/data
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target
