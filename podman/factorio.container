@@ -16,6 +16,7 @@ Volume=factorio:/factorio
 
 [Service]
 Restart=always
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target default.target
