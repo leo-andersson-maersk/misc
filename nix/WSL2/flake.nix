@@ -14,20 +14,45 @@
       # to avoid problems caused by different versions of nixpkgs.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-};
+  };
 
-  outputs = { self, nixpkgs, nixos-wsl, vscode-server, home-manager, ... }@inputs: {
-    # Please replace my-nixos with your hostname
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nixos-wsl,
+      vscode-server,
+      home-manager,
+      ...
+    }@inputs:
+    {
+      # Please replace my-nixos with your hostname
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      modules = [
-        # Import the previous configuration.nix we used,
-        # so the old configuration file still takes effect
-        ./configuration.nix
-	nixos-wsl.nixosModules.wsl
-	vscode-server.nixosModules.default
-	({ config, pkgs, ... }: {
-          services.vscode-server.enable = true;
-        })
+        modules = [
+          # Import the previous configuration.nix we used,
+          # so the old configuration file still takes effect
+          ./configuration.nix
+          nixos-wsl.nixosModules.wsl
+          vscode-server.nixosModules.default
+          (
+            { config, pkgs, ... }:
+            {
+              services.vscode-server.enable = true;
+              virtualisation = {
+                docker = {
+                  enable = true;
+                  enableOnBoot = true;
+                  autoPrune.enable = true;
+                  rootless.enable = true;
+                  rootless.setSocketVariable = true;
+                };
+                podman.enable = true;
+              };
+              users.extraGroups.docker.members = config.users.groups.wheel.members;
+
+            }
+          )
+
           # make home-manager as a module of nixos
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
           home-manager.nixosModules.home-manager
@@ -39,8 +64,9 @@
             home-manager.users.nixos = import ./home.nix;
 
             # Optionally, use home-manager.extraSpecialArgs to pass arguments to home.nix
+
           }
-      ];
+        ];
+      };
     };
-  };
 }

@@ -5,41 +5,61 @@
 # NixOS-WSL specific options are documented on the NixOS-WSL repository:
 # https://github.com/nix-community/NixOS-WSL
 
-{ config, lib, pkgs, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
+  imports = [
+    # If you want to use modules from other flakes (such as nixos-hardware):
+    # inputs.hardware.nixosModules.common-cpu-amd
+    # inputs.hardware.nixosModules.common-ssd
 
+    # You can also split up your configuration and import pieces of it here:
+    # ./users.nix
 
-nixpkgs.config.allowUnfree = true;
-imports = [
-    # Include the results of the hardware scan.
+    # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-];
-# Enable the Flakes feature and the accompanying new nix command-line tool
-nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  ];
 
+  nixpkgs.config.allowUnfree = true;
 
-environment.systemPackages = with pkgs; [
-	wget
-	libsecret
-	python3
-];
-programs.nix-ld = {
+  # Enable the Flakes feature and the accompanying new nix command-line tool
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  programs.direnv.enable = true;
+
+  programs.command-not-found.enable = false;
+
+  programs.nix-index.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    wget
+    libsecret
+    python3
+  ];
+  programs.nix-ld = {
     enable = true;
     package = pkgs.nix-ld-rs; # only for NixOS 24.05
-};
-programs.git = {
+  };
+  programs.git = {
     enable = true;
     lfs.enable = true;
   };
-programs.neovim = {
-  	enable = true;
-	viAlias = true;
-  	vimAlias = true;
-};
-environment.variables.EDITOR = "vim";
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+  };
+  environment.variables.EDITOR = "vim";
 
-programs.zsh.enable = true;
-users.defaultUserShell = pkgs.zsh;
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
 
   wsl.enable = true;
   wsl.defaultUser = "nixos";
@@ -51,30 +71,28 @@ users.defaultUserShell = pkgs.zsh;
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
 
-nix.optimise.automatic = true;
-nix.optimise.dates = ["weekly"]; # Optional; allows customizing optimisation schedule
+  nix.optimise.automatic = true;
+  nix.optimise.dates = [ "weekly" ]; # Optional; allows customizing optimisation schedule
 
-# Limit the number of generations to keep
-boot.loader.systemd-boot.configurationLimit = 10;  
-  
-nix.settings.auto-optimise-store = true;
+  # Limit the number of generations to keep
+  boot.loader.systemd-boot.configurationLimit = 10;
 
-# Weekly garbage collection
-nix.gc = {
-  automatic = true;
-  dates = "weekly";
-  options = "--delete-older-than 30d";
-};
+  nix.settings.auto-optimise-store = true;
 
+  # Weekly garbage collection
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
 
-system.autoUpgrade = {
-  enable = true;
-  flags = [
-    "--update-input"
-    "nixpkgs"
-    "--print-build-logs"
-  ];
-  dates = "weekly";
-};
+  system.autoUpgrade = {
+    enable = true;
+    flags = [
+      "--update-input"
+      "nixpkgs"
+      "--print-build-logs"
+    ];
+    dates = "weekly";
+  };
 }
-

@@ -20,7 +20,6 @@
   #     xxx
   # '';
 
-
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
     # here is some command line tools I use frequently
@@ -58,11 +57,12 @@
     # it provides the command `nom` works just like `nix`
     # with more details log output
     nix-output-monitor
+    nixfmt-rfc-style
 
     # productivity
     glow # markdown previewer in terminal
 
-    btop  # replacement of htop/nmon
+    btop # replacement of htop/nmon
     iotop # io monitoring
     iftop # network monitoring
 
@@ -79,7 +79,7 @@
     extraConfig.credential.helper = "manager";
     extraConfig.credential."https://github.com".username = "***";
     extraConfig.credential.credentialStore = "cache";
-    userName  = "***";
+    userName = "***";
     userEmail = "***";
 
   };
@@ -99,22 +99,22 @@
     };
   };
 
-programs.zsh = {
-   # Your zsh config
+  programs.zsh = {
+    # Your zsh config
 
-  enable = true;
-  enableCompletion = true;
-  syntaxHighlighting.enable = true;
-
-  shellAliases = {
-    ll = "ls -l";
-    update = "sudo nixos-rebuild switch";
-  };
-  oh-my-zsh = {
     enable = true;
-    plugins = [ "git" ];
+    enableCompletion = true;
+    syntaxHighlighting.enable = true;
+
+    shellAliases = {
+      ll = "ls -l";
+      update = "sudo nixos-rebuild switch";
+    };
+    oh-my-zsh = {
+      enable = true;
+      plugins = [ "git" ];
+    };
   };
-};
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage
   # when a new home Manager release introduces backwards
@@ -127,4 +127,5 @@ programs.zsh = {
 
   # Let home Manager install and manage itself.
   programs.home-manager.enable = true;
+
 }
