@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   # TODO please change the username & home directory to your own
@@ -27,6 +32,7 @@
 
     fastfetch
     nnn # terminal file manager
+    zsh-powerlevel10k
 
     # archives
     zip
@@ -62,6 +68,7 @@
     # productivity
     glow # markdown previewer in terminal
 
+    htop
     btop # replacement of htop/nmon
     iotop # io monitoring
     iftop # network monitoring
@@ -76,27 +83,9 @@
   # basic configuration of git, please change to your own
   programs.git = {
     enable = true;
-    extraConfig.credential.helper = "manager";
-    extraConfig.credential."https://github.com".username = "***";
-    extraConfig.credential.credentialStore = "cache";
-    userName = "***";
-    userEmail = "***";
-
-  };
-
-  # alacritty - a cross-platform, GPU-accelerated terminal emulator
-  programs.alacritty = {
-    enable = true;
-    # custom settings
-    settings = {
-      env.TERM = "xterm-256color";
-      font = {
-        size = 12;
-        draw_bold_text_with_bright_colors = true;
-      };
-      scrolling.multiplier = 2;
-      selection.save_to_clipboard = true;
-    };
+    lfs.enable = true;
+    userName  = ".";
+    userEmail = ".";
   };
 
   programs.zsh = {
@@ -104,6 +93,7 @@
 
     enable = true;
     enableCompletion = true;
+    autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
     shellAliases = {
@@ -112,8 +102,20 @@
     };
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" ];
+      plugins = [
+        "git"
+      ];
+      theme = "gentoo";
+      extraConfig = "source ~/.p10k.zsh";
     };
+    plugins = [
+      {
+        name = "powerlevel10k";
+        src = pkgs.zsh-powerlevel10k;
+        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+      }
+    ];
+
   };
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage
